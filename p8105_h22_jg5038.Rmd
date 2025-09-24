@@ -10,8 +10,8 @@ library(tidyverse)
 
 ## Problem 1
 
-Import and tidy data
-```{r}
+Import and clean pos_month data
+```{r message=FALSE}
 pos_month_df = read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv") |> 
   janitor::clean_names() |> 
   separate(
@@ -41,16 +41,40 @@ pos_month_df = read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv") |
       prez_gop == 1 ~ "gop",
       prez_dem == 1 ~ "dem"
     )
-  )
+  ) |> 
+  select(-day, -prez_dem, -prez_gop)
 ```
 
-Check if in original dataframe there are any rows where both prez_gop and prez_dem == 1
+Double check if in original dataframe there are any rows where both prez_gop and prez_dem == 1
 
-```{r}
+```{r message=FALSE}
 filter(
   read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv"), 
   prez_gop == 1, prez_dem == 1)
 ```
+
+Import and clean snp data
+```{r message=FALSE}
+snp_df = read_csv(file="./data/fivethirtyeight_datasets/snp.csv") |> 
+  separate(
+    col = "date",
+    into = c("month", "day", "year"),
+    sep = "/"
+  ) |>
+  #in order to correctly sort we need to recast the strings for year and month as integers
+  mutate(
+    year = case_when(
+      as.integer(year) <= 15 ~ as.integer(year) + 2000,
+      as.integer(year) > 15 ~ as.integer(year) + 1900
+    ),
+    month = as.integer(month)
+  ) |> 
+  relocate("year", "month",  "day") |> 
+  arrange(year, month, day)
+  
+  
+```
+
 
 
 
