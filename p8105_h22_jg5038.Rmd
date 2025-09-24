@@ -10,6 +10,7 @@ library(tidyverse)
 
 ## Problem 1
 
+Import and tidy data
 ```{r}
 pos_month_df = read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv") |> 
   janitor::clean_names() |> 
@@ -17,6 +18,40 @@ pos_month_df = read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv") |
     col="mon",
     into=c("year", "month", "day"),
     sep="-"
+  ) |> 
+  mutate(
+    month = 
+      case_match(
+        month, 
+        "01" ~ "january", 
+        "02" ~ "february",
+        "03" ~ "march",
+        "04" ~ "april", 
+        "05" ~ "may",
+        "06" ~ "june",
+        "07" ~ "july",
+        "08" ~ "august",
+        "09" ~ "september",
+        "10" ~ "october",
+        "11" ~ "november",
+        "12" ~ "december") 
+    ) |> 
+  mutate(
+    president = case_when(
+      prez_gop == 1 ~ "gop",
+      prez_dem == 1 ~ "dem"
+    )
   )
 ```
+
+Check if in original dataframe there are any rows where both prez_gop and prez_dem == 1
+
+```{r}
+filter(
+  read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv"), 
+  prez_gop == 1, prez_dem == 1)
+```
+
+
+
 
