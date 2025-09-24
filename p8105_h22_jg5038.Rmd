@@ -1,0 +1,7 @@
+---
+title: "Homework 2"
+author: Julia Gray
+output: github_document
+date: "09-24-25"
+---
+## Problem 1
