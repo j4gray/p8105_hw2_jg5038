@@ -12,7 +12,7 @@ library(tidyverse)
 
 Import and clean pos_month data
 ```{r message=FALSE}
-pos_month_df = read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv") |> 
+pols_df = read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv") |> 
   janitor::clean_names() |> 
   separate(
     col="mon",
@@ -97,8 +97,20 @@ Import and tidy unemployment data
 
 ```{r}
 unemployment_df = read_csv(file="./data/fivethirtyeight_datasets/unemployment.csv") |> 
-  janitor::clean_names()
+  janitor::clean_names() |> 
+  pivot_longer(
+    jan:dec,
+    names_to = "month", 
+    values_to = "unemployment"
+  )
 ```
+
+Join all datasets
+```{r}
+fte_df =
+  left_join(pols_df, snp_df)
+```
+
 
 
 
