@@ -90,12 +90,13 @@ snp_df = read_csv(file="./data/fivethirtyeight_datasets/snp.csv") |>
         11 ~ "nov",
         12 ~ "dec") 
     ) |> 
-  select(-day)
+  select(-day) |> 
+  rename(snp_close=close)
 ```
 
 Import and tidy unemployment data
 
-```{r}
+```{r message=FALSE}
 unemployment_df = read_csv(file="./data/fivethirtyeight_datasets/unemployment.csv") |> 
   janitor::clean_names() |> 
   pivot_longer(
@@ -107,11 +108,14 @@ unemployment_df = read_csv(file="./data/fivethirtyeight_datasets/unemployment.cs
 
 Join all datasets
 ```{r}
-fte_df =
-  left_join(pols_df, snp_df)
+fte_df = left_join(pols_df, snp_df, by = c("year", "month")) |> 
+  left_join(unemployment_df, by = c("year", "month"))
 ```
 
+These datasets contained information about the United States from `r range(select(fte_df, year))[1]` to `r range(select(fte_df, year))[2]`. The pols-month dataset contains information about the number of politicians who are republican or democrat at a given year/month. The snp dataset contains the closing values of the S&P stock market index for a year/month, selected on a given day either the 1st, 2nd, 3rd or 4th of the month. The unemployment dataset
+contains the percentage of unemployment at a given month/year.
 
+The resulting dataset has a dimension of `r dim(fte_df)` and covers `r range(select(fte_df, year))[1]` to `r range(select(fte_df, year))[2]`. The variables are `r unique(colnames(fte_df))`.
 
 
 
