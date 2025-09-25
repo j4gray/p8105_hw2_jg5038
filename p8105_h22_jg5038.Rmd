@@ -10,6 +10,16 @@ library(tidyverse)
 
 ## Problem 1
 
+First, let's check if in original dataset there are any rows where both prez_gop and prez_dem == 1
+
+```{r message=FALSE}
+filter(
+  read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv"), 
+  prez_gop + prez_dem > 1)
+```
+
+We can see that there are 5 rows where prez_gop == 2 (from August-December 1974, which is when Ford took over after Nixon resigned) so we must take that into account when assigning president column.
+
 Import and clean pos_month data
 ```{r message=FALSE}
 pols_df = read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv") |> 
@@ -38,20 +48,12 @@ pols_df = read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv") |>
     ) |> 
   mutate(
     president = case_when(
-      prez_gop == 1 ~ "gop",
-      prez_dem == 1 ~ "dem"
+      prez_gop >= 1 ~ "gop",
+      prez_dem >= 1 ~ "dem"
     )
   ) |> 
   select(-day, -prez_dem, -prez_gop) |> 
   mutate(year = as.integer(year))
-```
-
-Double check if in original dataframe there are any rows where both prez_gop and prez_dem == 1
-
-```{r message=FALSE}
-filter(
-  read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv"), 
-  prez_gop == 1, prez_dem == 1)
 ```
 
 Import and clean snp data
@@ -117,7 +119,7 @@ contains the percentage of unemployment at a given month/year.
 
 The resulting dataset has a dimension of `r dim(fte_df)` and covers `r range(select(fte_df, year))[1]` to `r range(select(fte_df, year))[2]`. The variables are `r unique(colnames(fte_df))`.
 
-
+## Problem 2
 
 
 
