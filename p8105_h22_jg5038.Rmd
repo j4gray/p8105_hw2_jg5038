@@ -6,6 +6,7 @@ date: "09-24-25"
 ---
 ```{r echo=TRUE, message=FALSE}
 library(tidyverse)
+library(readxl)
 ```
 
 ## Problem 1
@@ -120,6 +121,66 @@ contains the percentage of unemployment at a given month/year.
 The resulting dataset has a dimension of `r dim(fte_df)` and covers `r range(select(fte_df, year))[1]` to `r range(select(fte_df, year))[2]`. The variables are `r unique(colnames(fte_df))`.
 
 ## Problem 2
+
+```{r}
+mr_tw_df = read_excel('./data/202409 Trash Wheel Collection Data.xlsx', range="Mr. Trash Wheel!A2:N653") |> 
+  janitor::clean_names() |> 
+  mutate(
+    machine = 'mr',
+    sports_balls = as.integer(round(sports_balls))
+  ) |> 
+  #month and year are redundant to date so let's remove them and then parse the date column
+  select(-month, -year) |> 
+  separate(
+    col = "date",
+    into = c("year", "month", "day"),
+    sep = "-"
+  ) |> 
+  mutate (
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day)
+  )
+
+
+prof_tw_df = read_excel('./data/202409 Trash Wheel Collection Data.xlsx', range="Professor Trash Wheel!A2:M120") |> 
+  janitor::clean_names() |> 
+  mutate(
+    machine = 'prof',
+  ) |> 
+  select(-month, -year) |> 
+  separate(
+    col = "date",
+    into = c("year", "month", "day"),
+    sep = "-"
+  ) |> 
+  mutate (
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day)
+  )
+
+gwyn_tw_df = read_excel('./data/202409 Trash Wheel Collection Data.xlsx', range="Gwynnda Trash Wheel!A2:L265") |> 
+  janitor::clean_names() |> 
+  mutate(
+    machine = 'gwyn',
+  ) |> 
+  select(-month, -year) |> 
+  separate(
+    col = "date",
+    into = c("year", "month", "day"),
+    sep = "-"
+  ) |> 
+  mutate (
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day)
+  )
+
+
+tw_df = bind_rows(mr_tw_df, prof_tw_df, gwyn_tw_df) |> 
+  relocate(machine, year, month, day)
+```
 
 
 
