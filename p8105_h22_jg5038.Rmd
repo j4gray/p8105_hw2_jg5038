@@ -264,6 +264,23 @@ zip_no_rent_df = anti_join(zip_df, rent_zip_df, by = "zip_code")
 
 There are `r dim(select(zip_no_rent_df, zip_code))[1]` zip codes that appear in the zip codes dataset but not the zillow dataset. This is likely due to there being no residential real estate in that zip code. For example 10020 is an area in midtown from 48th-51st street and 5th-7th avenue that includes Radio City Music Hall and Rockefeller Center. Another illustrative example is 11371 which is the zip code for LaGuardia airport. 
 
+Let's create a new dataframe to compare rent indexes from January 2020 to January 2021:
+
+```{r}
+covid_rent_df = filter(rent_zip_df, 
+                       (year(date) == 2020 & month(date) == 1) | 
+                         (year(date) == 2021 & month(date) == 1)) |> 
+  select(zip_code, neighborhood, date, observed_rent_index) |> 
+  pivot_wider(
+    names_from=date,
+    values_from=observed_rent_index,
+    names_glue = "JAN_{year(date)}"
+  ) |> 
+  mutate(
+    rent_difference = round(JAN_2021 - JAN_2020)
+  ) |> 
+  arrange(rent_difference)
+```
 
 
 
