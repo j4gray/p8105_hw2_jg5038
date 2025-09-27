@@ -182,8 +182,8 @@ tw_df = bind_rows(mr_tw_df, prof_tw_df, gwyn_tw_df) |>
   relocate(machine, year, month, day)
 ```
 
-[Paragraph about data]
-Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of cigarette butts collected by Gwynnda in June of 2022
+
+This data contains `r dim(tw_df)[1]` observations and includes summary data about the total amount of trash collected, both in weight (tons) and volume (cubic yards), as well as by type of trash (e.g. plastic bottles, glass bottles, cigarette butts). The total weight of trash collected by Professor Trash Wheel was `r sum(select(filter(tw_df, machine=='mr'), weight_tons))` tons. The total number of cigarette butts collected by Gwynda in June of 2022 was `r sum(select(filter(tw_df, machine=='gwyn', month==6, year==2022), cigarette_butts))`.
 
 
 ## Problem 3
@@ -252,8 +252,6 @@ rent_zip_df = left_join(rent_df, zip_df, by = c("county", "zip_code")) |>
   relocate("zip_code", "neighborhood",  "date", "observed_rent_index")
 ```
 
-Briefly describe the resulting tidy dataset. How many total observations exist? How many unique ZIP codes are included, and how many unique neighborhoods?
-
 In the resulting tidy dataset we can see the observed rent index by neighborhood. There are `r dim(rent_zip_df)[1]` observations (or `r dim(filter(rent_zip_df, !is.na(observed_rent_index)))[1]` when we exclude null values). There are `r dim(unique(select(rent_zip_df, zip_code)))[1]` unique zip codes and `r dim(unique(select(rent_zip_df, neighborhood)))[1]` unique neighborhoods.
 
 To see what zip codes are in the zip_df but not the rent_df let's use an antijoin:
@@ -277,11 +275,18 @@ covid_rent_df = filter(rent_zip_df,
     names_glue = "JAN_{year(date)}"
   ) |> 
   mutate(
-    rent_difference = round(JAN_2021 - JAN_2020)
+    rent_difference = JAN_2021 - JAN_2020
   ) |> 
   arrange(rent_difference)
 ```
 
+Use this dataframe to create a table of the top 10 zip codes by rent decrease in covid
+
+```{r}
+knitr::kable(slice(covid_rent_df, 1:10))
+```
+
+These are all popular (dare I say trendy) residential districts in Manhattan where high rents did not equate to lots of space but rather amenities that were unavailable during the pandemic. It is unsurprising that they experienced the highest rent decrease during this time.
 
 
 
