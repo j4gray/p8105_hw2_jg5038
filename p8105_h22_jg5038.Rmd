@@ -182,6 +182,10 @@ tw_df = bind_rows(mr_tw_df, prof_tw_df, gwyn_tw_df) |>
   relocate(machine, year, month, day)
 ```
 
+[Paragraph about data]
+Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of cigarette butts collected by Gwynnda in June of 2022
+
+
 ## Problem 3
 
 Import data
@@ -205,7 +209,8 @@ rent_df = read_csv(file="./data/zillow_data/Zip_zori_uc_sfrcondomfr_sm_month_NYC
     values_to="observed_rent_index"
   ) |> 
   mutate(
-    date = str_replace(date, "x", "")
+    #let's use the lubridate package
+    date = ymd(str_replace(date, "x", ""))
   ) 
 
 ```
@@ -233,7 +238,38 @@ filter(zip_df, zip_code==10463)
 filter(zip_df, zip_code==11201)
 ```
 
-There are in 2 different counties:
+They are in 2 different counties so let's make sure we can map to rent_df
+
+```{r}
+unique(select(filter(rent_df, zip_code==10463), county))
+unique(select(filter(rent_df, zip_code==11201), county))
+```
+
+In rent_df these zipcodes only have 1 county so we can join on zip_code and county
+
+```{r}
+rent_zip_df = left_join(rent_df, zip_df, by = c("county", "zip_code")) |> 
+  relocate("zip_code", "neighborhood",  "date", "observed_rent_index")
+```
+
+Briefly describe the resulting tidy dataset. How many total observations exist? How many unique ZIP codes are included, and how many unique neighborhoods?
+
+In the resulting tidy dataset we can see the observed rent index by neighborhood. There are `r dim(rent_zip_df)[1]` observations (or `r dim(filter(rent_zip_df, !is.na(observed_rent_index)))[1]` when we exclude null values). There are `r dim(unique(select(rent_zip_df, zip_code)))[1]` unique zip codes and `r dim(unique(select(rent_zip_df, neighborhood)))[1]` unique neighborhoods.
+
+To see what zip codes are in the zip_df but not the rent_df let's use an antijoin:
+
+```{r}
+zip_no_rent_df = anti_join(zip_df, rent_zip_df, by = "zip_code")
+```
+
+There are `r dim(select(zip_no_rent_df, zip_code))[1]` zip codes that appear in the zip codes dataset but not the zillow dataset. This is likely due to there being no residential real estate in that zip code. For example 10020 is an area in midtown from 48th-51st street and 5th-7th avenue that includes Radio City Music Hall and Rockefeller Center. Another illustrative example is 11371 which is the zip code for LaGuardia airport. 
+
+
+
+
+
+
+
 
 
 
