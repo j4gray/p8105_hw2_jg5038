@@ -21,16 +21,21 @@ filter(
 
 We can see that there are 5 rows where prez_gop == 2 (from August-December 1974, which is when Ford took over after Nixon resigned) so we must take that into account when assigning president column.
 
-Import and clean pos_month data
+Import and clean pols_month data
 ```{r message=FALSE}
 pols_df = read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv") |> 
   janitor::clean_names() |> 
+  #let's add a lubridate before we separate the date
+  mutate(
+    lub_date = ymd(mon)
+  ) |> 
   separate(
     col="mon",
     into=c("year", "month", "day"),
     sep="-"
   ) |> 
   mutate(
+    year = as.integer(year),
     month = 
       case_match(
         month, 
@@ -53,8 +58,7 @@ pols_df = read_csv(file="./data/fivethirtyeight_datasets/pols-month.csv") |>
       prez_dem >= 1 ~ "dem"
     )
   ) |> 
-  select(-day, -prez_dem, -prez_gop) |> 
-  mutate(year = as.integer(year))
+  select(-day, -prez_dem, -prez_gop)
 ```
 
 Import and clean snp data
@@ -120,10 +124,14 @@ contains the percentage of unemployment at a given month/year.
 
 The resulting dataset has a dimension of `r dim(fte_df)` and covers `r range(select(fte_df, year))[1]` to `r range(select(fte_df, year))[2]`. The variables are `r unique(colnames(fte_df))`.
 
+
 ## Problem 2
 
 ```{r}
-mr_tw_df = read_excel('./data/202409 Trash Wheel Collection Data.xlsx', range="Mr. Trash Wheel!A2:N653") |> 
+#update for new dataset
+
+#mr_tw_df = read_excel('./data/202409 Trash Wheel Collection Data.xlsx', range="Mr. Trash Wheel!A2:N653") |> 
+mr_tw_df = read_excel('./data/202509 Trash Wheel Collection Data.xlsx', range="Mr. Trash Wheel!A2:N709") |> 
   janitor::clean_names() |> 
   mutate(
     machine = 'mr',
@@ -143,7 +151,8 @@ mr_tw_df = read_excel('./data/202409 Trash Wheel Collection Data.xlsx', range="M
   )
 
 
-prof_tw_df = read_excel('./data/202409 Trash Wheel Collection Data.xlsx', range="Professor Trash Wheel!A2:M120") |> 
+#prof_tw_df = read_excel('./data/202409 Trash Wheel Collection Data.xlsx', range="Professor Trash Wheel!A2:M120") |> 
+prof_tw_df = read_excel('./data/202509 Trash Wheel Collection Data.xlsx', range="Professor Trash Wheel!A2:M134") |> 
   janitor::clean_names() |> 
   mutate(
     machine = 'prof',
@@ -160,7 +169,8 @@ prof_tw_df = read_excel('./data/202409 Trash Wheel Collection Data.xlsx', range=
     day = as.integer(day)
   )
 
-gwyn_tw_df = read_excel('./data/202409 Trash Wheel Collection Data.xlsx', range="Gwynnda Trash Wheel!A2:L265") |> 
+#gwyn_tw_df = read_excel('./data/202409 Trash Wheel Collection Data.xlsx', range="Gwynnda Trash Wheel!A2:L265") |> 
+gwyn_tw_df = read_excel('./data/202509 Trash Wheel Collection Data.xlsx', range="Gwynns Falls Trash Wheel!A2:L351") |> 
   janitor::clean_names() |> 
   mutate(
     machine = 'gwyn',
