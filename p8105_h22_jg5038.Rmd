@@ -202,7 +202,14 @@ Import data
 
 ```{r}
 zip_df = read_csv(file="./data/zillow_data/Zip Codes.csv") |> 
-  janitor::clean_names()
+  janitor::clean_names() |> 
+  #because it will come up later let's manually update the neighborhood of 10069 to Upper West Side
+  mutate(neighborhood = case_when(
+    zip_code == "10069" ~ "Upper West Side",
+    TRUE ~ neighborhood 
+  ))
+
+select(filter(zip_df, zip_code=='10069'))
 
 rent_df = read_csv(file="./data/zillow_data/Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv") |> 
   janitor::clean_names() |> 
@@ -288,9 +295,11 @@ covid_rent_df = filter(rent_zip_df,
     rent_difference = JAN_2021 - JAN_2020
   ) |> 
   arrange(rent_difference)
+
+#10069 initially did not have a neighborhood assigned but by looking on a map we can see it is a small slice of Riverside Drive on the Upper West Side that is completely surrounded by the zip code 10023. 
 ```
 
-Use this dataframe to create a table of the top 10 zip codes by rent decrease in covid
+Use this dataframe to create a table of the top 10 zip codes by rent decrease in covid:
 
 ```{r}
 knitr::kable(slice(covid_rent_df, 1:10))
