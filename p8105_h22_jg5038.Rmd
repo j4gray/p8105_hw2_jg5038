@@ -193,7 +193,7 @@ tw_df = bind_rows(mr_tw_df, prof_tw_df, gwyn_tw_df) |>
 ```
 
 
-This data contains `r dim(tw_df)[1]` observations and includes summary data about the total amount of trash collected, both in weight (tons) and volume (cubic yards), as well as by type of trash (e.g. plastic bottles, glass bottles, cigarette butts). The total weight of trash collected by Professor Trash Wheel was `r sum(select(filter(tw_df, machine=='mr'), weight_tons))` tons. The total number of cigarette butts collected by Gwynda in June of 2022 was `r sum(select(filter(tw_df, machine=='gwyn', month==6, year==2022), cigarette_butts))`.
+This data contains `r dim(tw_df)[1]` observations and includes summary data about the total amount of trash collected, both in weight (tons) and volume (cubic yards), as well as by type of trash (e.g. plastic bottles, glass bottles, cigarette butts). The total weight of trash collected by Professor Trash Wheel was `r sum(select(filter(tw_df, machine=='prof'), weight_tons))` tons. The total number of cigarette butts collected by Gwynda in June of 2022 was `r sum(select(filter(tw_df, machine=='gwyn', month==6, year==2022), cigarette_butts))`.
 
 
 ## Problem 3
@@ -209,7 +209,7 @@ zip_df = read_csv(file="./data/zillow_data/Zip Codes.csv") |>
     TRUE ~ neighborhood 
   ))
 
-select(filter(zip_df, zip_code=='10069'))
+#select(filter(zip_df, zip_code=='10069'))
 
 rent_df = read_csv(file="./data/zillow_data/Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv") |> 
   janitor::clean_names() |> 
@@ -240,7 +240,7 @@ filter(zip_df, zip_code==10032)
 filter(rent_df, zip_code==10032)
 ```
 
-Do any zip codes map to more than 1 neighbordhood?
+Do any zip codes map to more than 1 neighborhood?
 
 ```{r}
 #duplicated(select(zip_df, zip_code)) == TRUE)
